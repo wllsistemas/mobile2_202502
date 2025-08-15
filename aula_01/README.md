@@ -8,5 +8,5 @@ Primeira aula demonstrando TextField e TextFormField
 - Uso do evento **onChange** no TextField
 - Uso do widget **Form** com **TextFormField**
 - Uso do evento **validator**
-- Uso de **TextEditingControllers** para monitorar **TextField** e **TextFormField**
+- Uso do objeto **TextEditingController** para monitorar **TextField** e **TextFormField**
 - Execução da rotinas de validação dos **TextFormField**
