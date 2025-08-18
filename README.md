@@ -9,3 +9,6 @@ Tecnologias envolvidas: <br>
 
 ## Aula 02 - Consumo de API com DIO
 [Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_02)
+
+## Aula 03 - Desserialização de JSON para classe Dart
+[Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_03)
