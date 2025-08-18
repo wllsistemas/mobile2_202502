@@ -1,4 +1,5 @@
 import 'package:app_dio_2025/model/cep_model.dart';
+import 'package:app_dio_2025/page2.dart';
 import 'package:app_dio_2025/shared/loading.dart';
 import 'package:app_dio_2025/shared/modal.dart';
 import 'package:dio/dio.dart';
@@ -37,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final _inputRua = TextEditingController();
   final _inputBairro = TextEditingController();
   final _inputCidade = TextEditingController();
+  CepModel? cepModel;
 
   void limparCampos() {
     _inputBairro.clear();
@@ -62,11 +64,11 @@ class _MyHomePageState extends State<MyHomePage> {
       final response = await dio.get('https://cep.awesomeapi.com.br/json/$cep');
 
       if (response.statusCode == 200) {
-        CepModel cep = CepModel.fromJson(response.data);
+        cepModel = CepModel.fromJson(response.data);
 
-        _inputBairro.text = cep.district;
-        _inputRua.text = cep.address;
-        _inputCidade.text = cep.city;
+        _inputBairro.text = cepModel!.district;
+        _inputRua.text = cepModel!.address;
+        _inputCidade.text = cepModel!.city;
       } else {
         showModalErro(context, 'CEP não encontrado');
       }
@@ -122,6 +124,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                 },
                 child: const Text('Consultar'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Page2(
+                        cep: cepModel!,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text('Page 2'),
               ),
               TextField(
                 controller: _inputRua,
