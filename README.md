@@ -12,3 +12,6 @@ Tecnologias envolvidas: <br>
 
 ## Aula 03 - Desserialização de JSON para classe Dart
 [Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_03)
+
+## Aula 04 - Widget ListView
+[Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_04)
