@@ -15,3 +15,6 @@ Tecnologias envolvidas: <br>
 
 ## Aula 04 - Widget ListView
 [Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_04)
+
+## Aula 05 - Widget ListView.builder com API
+[Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_05)
