@@ -18,3 +18,6 @@ Tecnologias envolvidas: <br>
 
 ## Aula 05 - Widget ListView.builder com API
 [Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_05)
+
+## Aula 06 - Consumindo API de tarefas com API com método GET
+[Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_06)
