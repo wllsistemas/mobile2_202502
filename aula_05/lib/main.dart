@@ -1,4 +1,3 @@
-import 'package:aula_05/model/post_model.dart';
 import 'package:aula_05/model/user_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
