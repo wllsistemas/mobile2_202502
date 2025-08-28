@@ -1,9 +1,8 @@
 # Aula 07
 
-Sexta aula adicionado Tarefas via API
+Sexta aula adicionando Tarefas via API
 
 ## Resumo da Aula
-- Consumindo tarefas com método **GET** [link](http://appwll.com.br/api/tarefas)
-- Excluindo tarefas com método **DELETE**
-- Trabalhando com widget RefreshIndicator
-- Trabalhando com widget Dismissible
+- Adicionando tarefas com método **POST** [link](http://appwll.com.br/api/tarefas)
+- Desenvolvido tela para cadastro de Tarefas
+- Desenvolvido labels para totalizar qtde de tarefas por prioridade

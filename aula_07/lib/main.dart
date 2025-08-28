@@ -34,6 +34,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<TarefaModel> tarefas = [];
+  int alta = 0;
+  int media = 0;
+  int baixa = 0;
 
   Future<bool> excluirTarefa(int id) async {
     try {
@@ -61,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return false;
   }
 
-  void consultaTarefas() async {
+  Future consultaTarefas() async {
     try {
       Loading.show(context, mensagem: 'Consultando tarefas...');
 
@@ -78,6 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (response.statusCode == 200) {
         List<dynamic> jsonList = response.data;
         tarefas = jsonList.map((json) => TarefaModel.fromJson(json)).toList();
+        totalizarTarefas();
         setState(() {});
       }
 
@@ -86,6 +90,25 @@ class _MyHomePageState extends State<MyHomePage> {
       Loading.hide();
       showModalErro(context, e.toString());
     }
+  }
+
+  void totalizarTarefas() {
+    if (tarefas.isEmpty) {
+      alta = 0;
+      media = 0;
+      baixa = 0;
+      return;
+    }
+
+    alta = tarefas.where((tarefa) => tarefa.prioridade.toLowerCase() == 'alta').length;
+
+    media = tarefas
+        .where((tarefa) =>
+            tarefa.prioridade.toLowerCase() == 'média' ||
+            tarefa.prioridade.toLowerCase() == 'media')
+        .length;
+
+    baixa = tarefas.where((tarefa) => tarefa.prioridade.toLowerCase() == 'baixa').length;
   }
 
   @override
@@ -102,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('${widget.title} (${tarefas.length})'),
+        title: Text(widget.title),
         actions: [
           IconButton(
             onPressed: consultaTarefas,
@@ -110,86 +133,159 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
       ),
-      body: Center(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            consultaTarefas();
-          },
-          child: ListView.builder(
-            itemCount: tarefas.length,
-            itemBuilder: (context, index) {
-              TarefaModel tarefa = tarefas[index];
-              String prioridade = tarefa.prioridade.toLowerCase().replaceAll('é', 'e');
-
-              Color cor;
-              switch (prioridade) {
-                case 'alta':
-                  cor = Colors.red;
-                  break;
-                case 'media':
-                  cor = Colors.amber;
-                  break;
-                case 'baixa':
-                  cor = Colors.green;
-                  break;
-                default:
-                  cor = Colors.red;
-              }
-
-              return Dismissible(
-                key: Key(tarefa.id.toString()),
-                direction: DismissDirection.endToStart,
-                background: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Icon(
-                    Icons.delete,
-                    color: Colors.white,
+      body: Column(
+        children: [
+          SizedBox(
+            height: 50,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Row(spacing: 10, children: [
+                Container(
+                  width: 80,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                      child: Text(
+                    'Todos ${(alta + media + baixa)}',
+                    style: TextStyle(color: Colors.grey[700]),
+                  )),
+                ),
+                Container(
+                  width: 80,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.red[100],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Alta $alta',
+                      style: TextStyle(color: Colors.red[800]),
+                    ),
                   ),
                 ),
-                onDismissed: (direction) async {
-                  var sucesso = await excluirTarefa(tarefa.id);
-
-                  if (sucesso) {
-                    tarefas.removeAt(index);
-                    setState(() {});
-                  }
-                },
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: cor,
+                Container(
+                  width: 80,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.amber[100],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
                     child: Text(
-                      tarefa.prioridade[0].toUpperCase(),
-                      style: TextStyle(
+                      'Média $media',
+                      style: TextStyle(color: Colors.amber[900]),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 80,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Baixa $baixa',
+                      style: TextStyle(color: Colors.green[800]),
+                    ),
+                  ),
+                ),
+              ]),
+            ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {
+                consultaTarefas();
+              },
+              child: ListView.builder(
+                itemCount: tarefas.length,
+                itemBuilder: (context, index) {
+                  TarefaModel tarefa = tarefas[index];
+                  String prioridade = tarefa.prioridade.toLowerCase().replaceAll('é', 'e');
+
+                  Color cor;
+                  switch (prioridade) {
+                    case 'alta':
+                      cor = Colors.red;
+                      break;
+                    case 'media':
+                      cor = Colors.amber;
+                      break;
+                    case 'baixa':
+                      cor = Colors.green;
+                      break;
+                    default:
+                      cor = Colors.red;
+                  }
+
+                  return Dismissible(
+                    key: Key(tarefa.id.toString()),
+                    direction: DismissDirection.endToStart,
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Icon(
+                        Icons.delete,
                         color: Colors.white,
                       ),
                     ),
-                  ),
-                  title: Text(
-                    tarefa.titulo,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[800],
+                    onDismissed: (direction) async {
+                      var sucesso = await excluirTarefa(tarefa.id);
+
+                      if (sucesso) {
+                        tarefas.removeAt(index);
+                        totalizarTarefas();
+                        setState(() {});
+                      }
+                    },
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: cor,
+                        child: Text(
+                          tarefa.prioridade[0].toUpperCase(),
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        tarefa.titulo,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Prioridade: ${tarefa.prioridade}',
+                        style: TextStyle(color: Colors.grey),
+                      ),
                     ),
-                  ),
-                  subtitle: Text(
-                    'Prioridade: ${tarefa.prioridade}',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
-              );
-            },
+                  );
+                },
+              ),
+            ),
           ),
-        ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
+        onPressed: () async {
+          var retorno = await Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => const AddPage(),
             ),
           );
+
+          if (retorno != null && retorno == true) {
+            consultaTarefas();
+          }
         },
         child: const Icon(Icons.add),
       ),

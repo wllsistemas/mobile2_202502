@@ -21,3 +21,6 @@ Tecnologias envolvidas: <br>
 
 ## Aula 06 - Consumindo API de tarefas com API com método GET
 [Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_06)
+
+## Aula 07 - Cadastro de tarefas via API e totalizador de prioridades
+[Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_07)
