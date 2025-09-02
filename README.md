@@ -24,3 +24,7 @@ Tecnologias envolvidas: <br>
 
 ## Aula 07 - Cadastro de tarefas via API e totalizador de prioridades
 [Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_07)
+
+## Aula 08 - Editação de tarefas via API e fitro de tarefas por título
+[Fontes](https://github.com/wllsistemas/mobile2_202502/tree/main/aula_08)
+

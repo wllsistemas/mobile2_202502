@@ -1,5 +1,6 @@
 import 'package:aula_06/model/tarefa_model.dart';
 import 'package:aula_06/page/add_page.dart';
+import 'package:aula_06/page/edit_page.dart';
 import 'package:aula_06/shared/loading.dart';
 import 'package:aula_06/shared/modal.dart';
 import 'package:dio/dio.dart';
@@ -35,7 +36,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<TarefaModel> tarefas = [];
+  final _inputFiltro = TextEditingController();
+  List<TarefaModel> tarefasOriginal = [];
+  List<TarefaModel> tarefasFiltrada = [];
   int alta = 0;
   int media = 0;
   int baixa = 0;
@@ -82,7 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
       if (response.statusCode == 200) {
         List<dynamic> jsonList = response.data;
-        tarefas = jsonList.map((json) => TarefaModel.fromJson(json)).toList();
+        tarefasOriginal = jsonList.map((json) => TarefaModel.fromJson(json)).toList();
+        tarefasFiltrada = List.from(tarefasOriginal);
         totalizarTarefas();
         setState(() {});
       }
@@ -95,22 +99,46 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void totalizarTarefas() {
-    if (tarefas.isEmpty) {
+    if (tarefasOriginal.isEmpty) {
       alta = 0;
       media = 0;
       baixa = 0;
       return;
     }
 
-    alta = tarefas.where((tarefa) => tarefa.prioridade.toLowerCase() == 'alta').length;
+    alta = tarefasOriginal.where((tarefa) => tarefa.prioridade.toLowerCase() == 'alta').length;
 
-    media = tarefas
+    media = tarefasOriginal
         .where((tarefa) =>
             tarefa.prioridade.toLowerCase() == 'média' ||
             tarefa.prioridade.toLowerCase() == 'media')
         .length;
 
-    baixa = tarefas.where((tarefa) => tarefa.prioridade.toLowerCase() == 'baixa').length;
+    baixa = tarefasOriginal.where((tarefa) => tarefa.prioridade.toLowerCase() == 'baixa').length;
+  }
+
+  void filtraPrioridade(String prioridade) {
+    if (prioridade == 'Todos') {
+      tarefasFiltrada = List.from(tarefasOriginal);
+    } else {
+      tarefasFiltrada = tarefasOriginal
+          .where(
+            (tarefa) => tarefa.prioridade.toLowerCase() == prioridade.toLowerCase(),
+          )
+          .toList();
+    }
+    setState(() {});
+  }
+
+  void filtraPorTitulo() {
+    if (_inputFiltro.text.isEmpty) {
+      tarefasFiltrada = List.from(tarefasOriginal);
+    } else {
+      tarefasFiltrada = tarefasOriginal
+          .where((tarefa) => tarefa.titulo.toLowerCase().contains(_inputFiltro.text.toLowerCase()))
+          .toList();
+    }
+    setState(() {});
   }
 
   @override
@@ -137,64 +165,106 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: SizedBox(
+              height: 50,
+              child: TextField(
+                controller: _inputFiltro,
+                decoration: InputDecoration(
+                  hintText: 'Filtrar por título',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[600],
+                  suffixIcon: Icon(Icons.search, color: Colors.white),
+                ),
+                onChanged: (value) {
+                  filtraPorTitulo();
+                },
+              ),
+            ),
+          ),
           SizedBox(
             height: 50,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Row(spacing: 10, children: [
-                Container(
-                  width: 80,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(20),
+                InkWell(
+                  onTap: () {
+                    filtraPrioridade('Todos');
+                  },
+                  child: Container(
+                    width: 80,
+                    height: 35,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(
+                        child: Text(
+                      'Todos ${(alta + media + baixa)}',
+                      style: TextStyle(color: Colors.grey[700]),
+                    )),
                   ),
-                  child: Center(
+                ),
+                InkWell(
+                  onTap: () {
+                    filtraPrioridade('alta');
+                  },
+                  child: Container(
+                    width: 80,
+                    height: 35,
+                    decoration: BoxDecoration(
+                      color: Colors.red[100],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(
                       child: Text(
-                    'Todos ${(alta + media + baixa)}',
-                    style: TextStyle(color: Colors.grey[700]),
-                  )),
-                ),
-                Container(
-                  width: 80,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Colors.red[100],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Alta $alta',
-                      style: TextStyle(color: Colors.red[800]),
+                        'Alta $alta',
+                        style: TextStyle(color: Colors.red[800]),
+                      ),
                     ),
                   ),
                 ),
-                Container(
-                  width: 80,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Colors.amber[100],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Média $media',
-                      style: TextStyle(color: Colors.amber[900]),
+                InkWell(
+                  onTap: () {
+                    filtraPrioridade('media');
+                  },
+                  child: Container(
+                    width: 80,
+                    height: 35,
+                    decoration: BoxDecoration(
+                      color: Colors.amber[100],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Média $media',
+                        style: TextStyle(color: Colors.amber[900]),
+                      ),
                     ),
                   ),
                 ),
-                Container(
-                  width: 80,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Colors.green[100],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Baixa $baixa',
-                      style: TextStyle(color: Colors.green[800]),
+                InkWell(
+                  onTap: () {
+                    filtraPrioridade('baixa');
+                  },
+                  child: Container(
+                    width: 80,
+                    height: 35,
+                    decoration: BoxDecoration(
+                      color: Colors.green[100],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Baixa $baixa',
+                        style: TextStyle(color: Colors.green[800]),
+                      ),
                     ),
                   ),
                 ),
@@ -207,9 +277,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 consultaTarefas();
               },
               child: ListView.separated(
-                itemCount: tarefas.length,
+                itemCount: tarefasFiltrada.length,
                 itemBuilder: (context, index) {
-                  TarefaModel tarefa = tarefas[index];
+                  TarefaModel tarefa = tarefasFiltrada[index];
                   String prioridade = tarefa.prioridade.toLowerCase().replaceAll('é', 'e');
 
                   Color cor;
@@ -243,12 +313,26 @@ class _MyHomePageState extends State<MyHomePage> {
                       var sucesso = await excluirTarefa(tarefa.id);
 
                       if (sucesso) {
-                        tarefas.removeAt(index);
+                        tarefasFiltrada.removeAt(index);
+                        tarefasOriginal.removeAt(index);
                         totalizarTarefas();
                         setState(() {});
                       }
                     },
                     child: ListTile(
+                      onTap: () async {
+                        var retorno = await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => EditPage(
+                              tarefa: tarefa,
+                            ),
+                          ),
+                        );
+
+                        if (retorno != null && retorno == true) {
+                          consultaTarefas();
+                        }
+                      },
                       leading: CircleAvatar(
                         backgroundColor: cor,
                         child: Text(
